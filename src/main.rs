@@ -1,12 +1,12 @@
 use raylib::prelude::*;
 
 fn main() {
-    // Initialize Raylib
     let (mut rl, thread) = raylib::init()
         .size(800, 600)
         .title("Sat View")
         .build();
 
+    // Uncomment this to capture the cursor
     // rl.disable_cursor();
 
     let mut camera = Camera3D::perspective(
@@ -31,11 +31,11 @@ fn main() {
         tle.2.as_bytes(),
     )
     .expect("Failed to parse TLE");
-    // Calculate satellite positions
     let mut points = Vec::new();
 
     let constants = sgp4::Constants::from_elements(&elements).expect("SGP4 propagation failed");
 
+    // Plot each point every hour for 24 hours
     for hours in 0..24 {
         let prediction = constants
             .propagate(sgp4::MinutesSinceEpoch((hours * 60) as f64))
@@ -47,12 +47,9 @@ fn main() {
         ));
     }
 
-    // Main loop
     while !rl.window_should_close() {
-        // Update camera
         rl.update_camera(&mut camera, CameraMode::CAMERA_FREE);
 
-        // Draw
         let mut d = rl.begin_drawing(&thread);
         d.clear_background(Color::RAYWHITE);
 
